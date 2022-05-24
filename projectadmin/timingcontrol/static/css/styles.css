@@ -1,0 +1,21 @@
+body{
+    background-color: #219ebc;
+}
+img{
+    background-color: transparent;
+    background: transparent;
+}
+@media ( min-width: 1200px ) {
+    .container{
+        max-width: 1000px !important;  
+    }  
+} 
+
+.errorlist{
+    color: red !important;
+}
+
+a, a:hover{
+    text-decoration: none !important;
+    cursor: pointer;
+}

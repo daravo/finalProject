@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1>Delete Worker</h1>
+
+<p>Are you sure you want to delete the worker: {{ worker }}?</p>
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <div>
+    <input class="btn btn-outline-danger" type="submit" action="" value="Yes, delete." />
+    <a class="btn btn-outline-primary" href="javascript:history.go(-1)">No, go back</a>
+  </div>
+
+</form>
+
+{% endblock %}

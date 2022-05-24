@@ -1,0 +1,99 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+
+{% block title %} <title>Home</title> {% endblock title %}
+<h1>Bienvenid@</h1>
+
+<div id="app" class="container">
+    <p>[[ message ]]</p>
+    <div v-if="!check_in && !check_out" class="row row-cols-2">
+        <div class="col">
+            <div class="card bg-success" @click="geolocalizar(); check_in=true; check_out=false">             
+                {% load static %}
+                <img src="{% static 'images/checkin.jpg' %}" width='100%' class="card-img-top" >
+                <div class="card-body">
+                    <a class="stretched-link"><p class="card-text">Check-in</p></a>
+                </div>
+              </div>
+        </div>
+        <div class="col">
+            <div class="card bg-warning" @click="check_in=false; check_out=true">
+                {% load static %}
+                <img src="{% static 'images/checkout.jpg' %}" width='100%' class="card-img-top" >
+                <div class="card-body">
+                  <p class="card-text">Check-out</p>
+                </div>
+              </div>
+        </div>
+    </div>
+    <div v-if="check_in || check_out" >
+      <span class="btn btn-outline-primary" @click="check_in=false; check_out=false">Atrás</span>
+      <div v-if="project_around.length>0" class="mt-5 text-center">
+        <p class="text-center">Selecciona el proyecto cercano para hacer <span v-if="check_in">check-in</span><span v-if="check_out">check-out</span></p>
+        <proyecto
+        v-for="project in project_around"
+        class="row mb-3 mx-auto"
+        v-bind:class="{ 'bg-danger': check_out, 'bg-success': check_in }"
+        v-bind:datos="project"
+        v-bind:key="project.name"
+      ></proyecto>
+       
+    </div>
+    </div>
+        
+
+      
+
+ 
+
+
+      <!-- * proyectos * -->
+    
+    <!--termina el app-->
+
+  
+
+<p>ahora una imagencilla</p>
+
+<p>Latitud del vue: [[ latitud ]]</p>
+<p>Longitud del vue: [[longitud]]</p>
+<p>Rango de error: [[accuracy]]</p>
+
+
+<p>Estado de checking: [[check_in]]</p>
+
+<p><b>Número de trabajadores: </b> {{workers}} </p>
+<p><b>Número de proyectos: </b>{{num_projects}}</p>
+<p><b>Número de visitas a esta página: </b> {{num_visits}} </p>
+<ul>
+    {% for proyecto in projects %}
+    <li>{{proyecto.name}} en {{ proyecto.city }}</li>
+    {% endfor %}
+</ul>
+
+<p>Trabajadores</p>
+<ul>
+    {% for trabajador in workers %}
+    <li> {{trabajador.name}}, {{trabajador.job}} </li>
+    {% endfor %}
+</ul>
+
+</div>
+
+
+{% load static %}
+<script src="{% static 'js/geo.js' %}"></script>
+     <!-- empiezan las templates -->
+  <!-- * proyecto * -->
+  <script type="text/x-template" id="proyecto-template">
+    <div class="card">
+        <div class="card-body p-0">
+            <p class="card-text mb-0 w-100">[[datos.name]]</p>
+            <p class="card-text text-secondary w-100">[[datos.address]]</p>
+          </div>
+    </div>
+  </script>
+
+  <!-- -->
+
+{% endblock content %}

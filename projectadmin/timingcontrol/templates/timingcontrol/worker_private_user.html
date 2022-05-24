@@ -1,0 +1,17 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+    <h1>Welcome {{user.get_username}}</h1>
+
+    {% if worker_list %}
+    <ul>
+        {% for worker in worker_list %}
+        <li> {{worker.name}} {{worker.surname}} <a class='btn btn-outline-info' href="{% url 'worker-detail' worker.id %}">Go to perfil</a></li>
+        {% endfor %}
+    </ul>
+
+    {% else %}
+    <p>You have not profile available</p>
+    {% endif %}
+{% endblock content %}
+
