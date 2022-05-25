@@ -1,0 +1,16 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+{% block title %} <title>Detail hours</title> {% endblock title %}
+<h1>Detalle de horas</h1>
+
+<p><b>usuario: </b> {{times.user_id}} </p>
+<p><b>proyecto: </b> {{times.project_id}} </p>
+<p><b>fecha: </b> {{times.date}} </p>
+<p><b>entrada: </b> {{times.timeEntry}} </p>
+<p><b>salida: </b> {{times.timeExit}} </p>
+<p><b>horas: </b> {{times.worked_hours}} </p>
+
+
+
+{% endblock content %}

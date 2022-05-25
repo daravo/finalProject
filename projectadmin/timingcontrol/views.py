@@ -9,7 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, permission_required #decorador para funciones
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin #mixin que restringe en clases (vistas basadas en clases)
-from .models import Project, Worker, Useres
+from .models import Project, Worker, Useres, Times
 import datetime
 from .forms import RenewBookForm, CreateWorkerModelForm #Importando formularios
 
@@ -142,7 +142,23 @@ class ProjectListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListV
 class ProjectDetailView(PermissionRequiredMixin, LoginRequiredMixin, generic.DetailView):
     model = Project    
     permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
-   
+#-------------------------TIMES----------------
+class TimestListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListView):
+    permission_required = ('timingcontrol.can_edit', )
+    model = Times
+    paginate_by = 10
+    
+class TimesUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    permission_required = ('timingcontrol.can_edit', )
+    model = Times
+    fields = '__all__'
+    
+class TimesDetailView(PermissionRequiredMixin, LoginRequiredMixin, generic.DetailView):
+    permission_required = ('timingcontrol.can_edit', )
+    model = Times
+  
+
+    
     """
     ejemplos
     """
