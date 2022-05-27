@@ -28,6 +28,8 @@
     </div>
     <div v-if="check_in || check_out" >
       <span class="btn btn-outline-primary" @click="check_in=false; check_out=false">Atrás</span>
+      Posicion:
+      <div id="mapcanvas" style="width:400px; height:400px"></div>
       <div v-if="project_around.length>0" class="mt-5 text-center">
         <p class="text-center">Selecciona el proyecto cercano para hacer <span v-if="check_in">check-in</span><span v-if="check_out">check-out</span></p>
         <proyecto
@@ -36,6 +38,7 @@
         v-bind:class="{ 'bg-danger': check_out, 'bg-success': check_in }"
         v-bind:datos="project"
         v-bind:key="project.name"
+        @click="capturarHora()"
       ></proyecto>
        
     </div>
@@ -93,6 +96,9 @@
           </div>
     </div>
   </script>
+
+  {% load static %}
+  <script src="{% static 'js/index.js' %}"></script>
 
   <!-- -->
 
