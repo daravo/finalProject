@@ -157,6 +157,10 @@ class TimesDetailView(PermissionRequiredMixin, LoginRequiredMixin, generic.Detai
     permission_required = ('timingcontrol.can_edit', )
     model = Times
   
+class TimesCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required =  ('timingcontrol.can_edit', )
+    model = Times
+    fields = '__all__'
 
     
     """
@@ -225,4 +229,10 @@ class ProjectListApiView(ListAPIView):
         kword = self.request.query_params.get('kword', '')
         return Project.objects.filter(name__icontains = kword)
     
+def newDate(request, pk, hour):
+    print(request.__dict__)
+    fecha = pk
+    hora = hour
+    print('fecha recogida en el back ', fecha, '\nhora recogida en el back ',hora)
+    return index(request)
     

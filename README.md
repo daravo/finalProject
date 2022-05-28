@@ -15,3 +15,8 @@ Bootstrap 5.1.3
 pip install djangorestframework
 
 pip install Django==3.2.9
+
+# API key
+
+AIzaSyByBO0XRxMXjCaMJiMX1sq14rquX6_kPqw
+

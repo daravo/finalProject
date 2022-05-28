@@ -28,29 +28,33 @@
     </div>
     <div v-if="check_in || check_out" >
       <span class="btn btn-outline-primary" @click="check_in=false; check_out=false">Atrás</span>
-      Posicion:
+      
+      <p> Posicion aproximada: </p>
       <div id="mapcanvas" style="width:400px; height:400px"></div>
+
+
       <div v-if="project_around.length>0" class="mt-5 text-center">
+              <!-- * proyectos * -->
         <p class="text-center">Selecciona el proyecto cercano para hacer <span v-if="check_in">check-in</span><span v-if="check_out">check-out</span></p>
+        <a href="{% url 'new-date' '[[fecha]]' 'carlos' %}">
         <proyecto
         v-for="project in project_around"
         class="row mb-3 mx-auto"
         v-bind:class="{ 'bg-danger': check_out, 'bg-success': check_in }"
         v-bind:datos="project"
         v-bind:key="project.name"
-        @click="capturarHora()"
       ></proyecto>
+      [[fecha]]
+    </a>
        
+    </div>
+
+    <div v-else>
+      <p>No hay proyectos cercanos a los que acceder</p>
     </div>
     </div>
         
 
-      
-
- 
-
-
-      <!-- * proyectos * -->
     
     <!--termina el app-->
 
@@ -84,8 +88,6 @@
 </div>
 
 
-{% load static %}
-<script src="{% static 'js/geo.js' %}"></script>
      <!-- empiezan las templates -->
   <!-- * proyecto * -->
   <script type="text/x-template" id="proyecto-template">
@@ -97,8 +99,8 @@
     </div>
   </script>
 
-  {% load static %}
-  <script src="{% static 'js/index.js' %}"></script>
+{% load static %}
+<script src="{% static 'js/geo.js' %}"></script>
 
   <!-- -->
 

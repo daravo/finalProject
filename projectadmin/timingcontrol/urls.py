@@ -55,6 +55,8 @@ urlpatterns += [
 #Times:
 urlpatterns += [
     path("times/", views.TimestListView.as_view(), name="times"),
+    #path("times/create/", views.TimesCreate.as_view(), name="create_time"),
+    path("times/date/<str:pk>/<str:hour>", views.newDate, name="new-date"),
     path("time/<int:pk>/update/", views.TimesUpdateView.as_view(), name="time_update"),
     path("time_detail/<int:pk>/", views.TimesUpdateView.as_view(), name="times_detail"),
 ]

@@ -12,6 +12,8 @@ let geo = new Vue({
   delimiters: ["[[", "]]"],
   data: {
     message: "Hola Vue!",
+    fecha: "fecha",
+    hora: "",
     latitud: "",
     longitud: "",
     accuracy: "",
@@ -35,39 +37,35 @@ let geo = new Vue({
         (response) =>
           (this.projects = response.data))
       .catch((error) => console.log(error));
+      this.guardarhora();
   },
   methods: {
-    capturarHora() {
-      console.log('entra en captura de hora');
-
+    guardarhora(){
+      let fecha = new Date();
+      let hour = fecha.getTime();
+      let dia = fecha.getDate();
+      let mes = fecha.getMonth()+1;
+      let anio = fecha.getFullYear();
+      this.fecha = anio+'-'+mes+'-'+dia;
+      this.hora = fecha.getHours()+':'+fecha.getMinutes()+':'+fecha.getSeconds();
+      console.log('guardando hora',hora);
     },
-
     geolocalizar: function () {
       console.log("mallamao");
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition((position) => {
-
+          this.success(position);
           this.guardar_variables(
             position.coords.latitude,
             position.coords.accuracy,
             position.coords.longitude
           );
-          this.success(position);
-        });
+
+        }, (positionErrorCallback) => { console.log(error) }, { enableHighAccuracy: true });
         console.log("final del if");
-       
+
       }
     },
-    /* doSomething: function () {
-       console.log("entra al something");
-       const watchID = navigator.geolocation.watchPosition((position) => {
-         this.guardar_variables(
-           position.coords.latitude,
-           position.coords.accuracy,
-           position.coords.longitude
-         );
-       });
-     },*/
     guardar_variables: function (lat, acc, lon) {
       this.latitud = lat;
       this.longitud = lon;
@@ -100,7 +98,7 @@ let geo = new Vue({
 
         let distancia = R * formula2;
         console.log("distancia", distancia);
-
+//modificar para pruebas el valor de la distancia
         if (distancia <= 0.900 && this.project_around.indexOf(element) == -1) { //Distancia menor a 300 metros, para pruebas en ordenador, menor de 700
           this.project_around.push(element);
         }
@@ -124,5 +122,6 @@ let geo = new Vue({
         title: "Estás aquí! (en un radio de " + position.coords.accuracy + " metros)"
       })
     },
+  
   },
 });
