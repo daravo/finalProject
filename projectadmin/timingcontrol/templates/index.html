@@ -7,7 +7,7 @@
 <div id="app" class="container">
     <p>[[ message ]]</p>
     <div v-if="!check_in && !check_out" class="row row-cols-2">
-        <div class="col">
+       <div class="col">
             <div class="card bg-success" @click="geolocalizar(); check_in=true; check_out=false">             
                 {% load static %}
                 <img src="{% static 'images/checkin.jpg' %}" width='100%' class="card-img-top" >
@@ -36,16 +36,17 @@
       <div v-if="project_around.length>0" class="mt-5 text-center">
               <!-- * proyectos * -->
         <p class="text-center">Selecciona el proyecto cercano para hacer <span v-if="check_in">check-in</span><span v-if="check_out">check-out</span></p>
-        <a href="{% url 'new-date' '[[fecha]]' 'carlos' %}">
+     <!-- <a href="{% url 'new-date' '[[fecha]]' 'carlos' %}"> </a> -->  
         <proyecto
         v-for="project in project_around"
         class="row mb-3 mx-auto"
         v-bind:class="{ 'bg-danger': check_out, 'bg-success': check_in }"
         v-bind:datos="project"
         v-bind:key="project.name"
+        @click="guardarhora()"
       ></proyecto>
       [[fecha]]
-    </a>
+   
        
     </div>
 

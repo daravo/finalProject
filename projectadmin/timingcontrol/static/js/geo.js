@@ -3,6 +3,25 @@ Vue.component("proyecto", {
   delimiters: ["[[", "]]"],
   template: "#proyecto-template",
   props: ["datos"],
+  data(){
+    return{
+      fecha: "",
+      hora: ""
+    }  
+  },
+  methods: {
+    guardarhora(){
+      console.log('entra en guardarhora');
+      let fecha = new Date();
+      let hour = fecha.getTime();
+      let dia = fecha.getDate();
+      let mes = fecha.getMonth()+1;
+      let anio = fecha.getFullYear();
+      this.fecha = anio+'-'+mes+'-'+dia;
+      this.hora = fecha.getHours()+':'+fecha.getMinutes()+':'+fecha.getSeconds();
+      console.log('fecha guardada', this.fecha, 'hora guardada',this.hora);
+    },
+  },
   mounted() {
     console.log(this.datos)
   }
@@ -41,6 +60,7 @@ let geo = new Vue({
   },
   methods: {
     guardarhora(){
+      console.log('entra en guardarhora');
       let fecha = new Date();
       let hour = fecha.getTime();
       let dia = fecha.getDate();
@@ -48,7 +68,7 @@ let geo = new Vue({
       let anio = fecha.getFullYear();
       this.fecha = anio+'-'+mes+'-'+dia;
       this.hora = fecha.getHours()+':'+fecha.getMinutes()+':'+fecha.getSeconds();
-      console.log('guardando hora',hora);
+      console.log('fecha guardada', this.fecha, 'hora guardada',this.hora);
     },
     geolocalizar: function () {
       console.log("mallamao");
