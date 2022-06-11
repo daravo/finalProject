@@ -12,6 +12,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from .models import Project, Worker, Useres, Times
 import datetime
 from .forms import RenewBookForm, CreateWorkerModelForm #Importando formularios
+import sqlite3
+
+con = sqlite3.connect('project_db.sqlite3', check_same_thread=False)
+
+def sentencias (con, sentencia, listaDatos):#Recibe una sentencia SQL y una lista con los datos
+
+    cursorObj = con.cursor()
+    cursorObj.execute(sentencia,listaDatos)
+    con.commit()
 
 #@login_required
 def index(request):
@@ -184,35 +193,7 @@ def worker_detail_view(request, pk):
     """
     
     """
-@permission_required('catalog.can_mark_returned')
-def renew_book_librarian(request, pk):
-    """
-    View function for renewing a specific BookInstance by librarian
-    """
-    book_inst=get_object_or_404(BookInstance, pk = pk)
 
-    # If this is a POST request then process the Form data
-    if request.method == 'POST':
-
-        # Create a form instance and populate it with data from the request (binding):
-        form = RenewBookForm(request.POST)
-
-        # Check if the form is valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            book_inst.due_back = form.cleaned_data['renewal_date']
-            book_inst.save()
-
-            # redirect to a new URL:
-            return HttpResponseRedirect(reverse('all-borrowed') )
-
-    # If this is a GET (or any other method) create the default form.
-    else:
-        proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
-        form = RenewBookForm(initial={'renewal_date': proposed_renewal_date,})
-
-    return render(request, 'catalog/book_renew_librarian.html', {'form': form, 'bookinst':book_inst})
-    
 """aquí empiezan los servicios
 """
 class WorkerListApiView(ListAPIView):
@@ -235,4 +216,36 @@ def newDate(request, pk, hour):
     hora = hour
     print('fecha recogida en el back ', fecha, '\nhora recogida en el back ',hora)
     return index(request)
+
+def newDateForm(request):
+    datos = []
+    datosConsulta = []
+    registroFecha = request.POST.get('registroFecha')
+    datos.append(registroFecha)
+    registroHora = request.POST.get('registroHora')
+    datos.append(registroHora)
+    projectId = request.POST.get('projectId')
+    datos.append(projectId)
+    userId = request.POST.get('userId')
+    datos.append(userId)
     
+    datosConsulta.append(projectId)
+    datosConsulta.append(registroFecha)
+    datosConsulta.append(userId)
+    
+    #consultar si existe ya el checkin para evitar checkin duplicados en el mismo día:
+    sentenciaConsulta = 'SELECT * from timingcontrol_times where project_id_id = ? and date = ? and user_id_id = ?;'
+    cur = con.cursor()
+    cur.execute(sentenciaConsulta,datosConsulta)
+    resultado = cur.fetchone()
+    resultado = str(resultado)
+    if resultado == None: #Si no existe registro con la misma fecha, proyecto y usuario, le doy de alta
+        sentenciaAlta = 'INSERT INTO timingcontrol_times(date, timeEntry, project_id_id, user_id_id) VALUES(?, ?, ?, ?);'
+        sentencias(con,sentenciaAlta,datos)
+        #Redirigir a esta altura a una pantalla de éxito
+        return render(request, 'timingcontrol/success_checkin.html')
+    else:
+        #Redirigir a pantalla advirtiendo que ya se ha hecho el checkin para este día en este proyecto
+        return render(request, 'timingcontrol/error_checkin.html')
+    
+

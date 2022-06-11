@@ -2,10 +2,40 @@
 {% block content %}
 
 {% block title %} <title>Home</title> {% endblock title %}
-<h1>Bienvenid@</h1>
+<h1 class="my-5">Bienvenid@</h1>
 
 <div id="app" class="container">
-    <p>[[ message ]]</p>
+  <!--Modal-->
+
+<!-- Modal -->
+<div class="modal fade" id="modalCheckin" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalCheckinLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCheckinLabel">Registrar <span v-if="check_in">check-in</span><span v-if="check_out">check-out</span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Se va a registrar la <span v-if="check_in">entrada</span><span v-if="check_out">salida</span> con fecha [[ fecha ]] y hora [[ hora ]]</p>
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form action="{% url 'new-date-form' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="userId" value="{{user.id}}">
+        <input type="text" name="projectId" :value="id_project_selected">
+        <input type="text" name="projectName" :value="project_selected">
+        <input type="date" name="registroFecha" :value="fecha">
+        <input type="time" name="registroHora":value="hora">
+        <button type="submit" class="btn btn-primary">Realizar <span v-if="check_in">check-in</span><span v-if="check_out">check-out</span></button>
+       </form>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- fin modal -->
+
     <div v-if="!check_in && !check_out" class="row row-cols-2">
        <div class="col">
             <div class="card bg-success" @click="geolocalizar(); check_in=true; check_out=false">             
@@ -17,7 +47,7 @@
               </div>
         </div>
         <div class="col">
-            <div class="card bg-warning" @click="check_in=false; check_out=true">
+            <div class="card bg-warning" @click="geolocalizar(); check_in=false; check_out=true">
                 {% load static %}
                 <img src="{% static 'images/checkout.jpg' %}" width='100%' class="card-img-top" >
                 <div class="card-body">
@@ -43,7 +73,6 @@
         v-bind:class="{ 'bg-danger': check_out, 'bg-success': check_in }"
         v-bind:datos="project"
         v-bind:key="project.name"
-        @click="guardarhora()"
       ></proyecto>
       [[fecha]]
    
@@ -60,15 +89,6 @@
     <!--termina el app-->
 
   
-
-<p>ahora una imagencilla</p>
-
-<p>Latitud del vue: [[ latitud ]]</p>
-<p>Longitud del vue: [[longitud]]</p>
-<p>Rango de error: [[accuracy]]</p>
-
-
-<p>Estado de checking: [[check_in]]</p>
 
 <p><b>Número de trabajadores: </b> {{workers}} </p>
 <p><b>Número de proyectos: </b>{{num_projects}}</p>
@@ -92,12 +112,12 @@
      <!-- empiezan las templates -->
   <!-- * proyecto * -->
   <script type="text/x-template" id="proyecto-template">
-    <div class="card">
+    <button class="card w-100" v-on:click="guardarhora(datos.name, datos.id)" type="button" data-bs-toggle="modal" data-bs-target="#modalCheckin">
         <div class="card-body p-0">
             <p class="card-text mb-0 w-100">[[datos.name]]</p>
             <p class="card-text text-secondary w-100">[[datos.address]]</p>
           </div>
-    </div>
+        </button>
   </script>
 
 {% load static %}

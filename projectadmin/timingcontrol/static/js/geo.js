@@ -6,20 +6,43 @@ Vue.component("proyecto", {
   data(){
     return{
       fecha: "",
-      hora: ""
+      hora: "",
+      project_selected: "",
     }  
   },
   methods: {
-    guardarhora(){
-      console.log('entra en guardarhora');
+    guardarhora(project, idproject){
+      console.log('entra en guardarhora del componente');
       let fecha = new Date();
-      let hour = fecha.getTime();
       let dia = fecha.getDate();
+      if (dia<10){
+        dia = '0'+dia;
+      }
       let mes = fecha.getMonth()+1;
+      if (mes<10){
+        mes = '0'+mes;
+      }
       let anio = fecha.getFullYear();
       this.fecha = anio+'-'+mes+'-'+dia;
-      this.hora = fecha.getHours()+':'+fecha.getMinutes()+':'+fecha.getSeconds();
-      console.log('fecha guardada', this.fecha, 'hora guardada',this.hora);
+
+      //Obtener hora:
+      let hora = fecha.getHours();
+      if (hora<10){
+        hora = '0'+hora;
+      }
+      let minutos = fecha.getMinutes();
+      if (minutos<10){
+        minutos = '0'+minutos;
+      }
+      let segundos = fecha.getSeconds();
+      if (segundos<10){
+        segundos = '0'+segundos;
+      }
+      this.hora = hora+':'+minutos+':'+segundos;
+      this.project_selected = project;
+      this.$root.project_selected = project;
+      this.$root.id_project_selected = idproject;
+      console.log('fecha guardada', this.fecha, 'hora guardada',this.hora);  
     },
   },
   mounted() {
@@ -40,6 +63,8 @@ let geo = new Vue({
     check_out: false,
     projects: new Array(), //lleno con un array de objetos con los proyectos
     project_around: [], //Proyectos alrededor de la posición actual
+    project_selected: '',
+    id_project_selected: "",
   },
   watch: {
     latitud: function () {
@@ -60,14 +85,34 @@ let geo = new Vue({
   },
   methods: {
     guardarhora(){
-      console.log('entra en guardarhora');
+      console.log('entra en guardarhora del root');
       let fecha = new Date();
       let hour = fecha.getTime();
       let dia = fecha.getDate();
-      let mes = fecha.getMonth()+1;
       let anio = fecha.getFullYear();
+      if (dia<10){
+        dia = '0'+dia;
+      }
+      let mes = fecha.getMonth()+1;
+      if (mes<10){
+        mes = '0'+mes;
+      }
       this.fecha = anio+'-'+mes+'-'+dia;
-      this.hora = fecha.getHours()+':'+fecha.getMinutes()+':'+fecha.getSeconds();
+      //Obtener hora:
+      let hora = fecha.getHours();
+      if (hora<10){
+        hora = '0'+hora;
+      }
+      let minutos = fecha.getMinutes();
+      if (minutos<10){
+        minutos = '0'+minutos;
+      }
+      let segundos = fecha.getSeconds();
+      if (segundos<10){
+        segundos = '0'+segundos;
+      }
+      this.hora = hora+':'+minutos;
+
       console.log('fecha guardada', this.fecha, 'hora guardada',this.hora);
     },
     geolocalizar: function () {

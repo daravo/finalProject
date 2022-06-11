@@ -20,3 +20,7 @@ pip install Django==3.2.9
 
 AIzaSyByBO0XRxMXjCaMJiMX1sq14rquX6_kPqw
 
+# Activar el virtualenv de test
+
+source test/Scripts/activate
+

@@ -59,6 +59,7 @@ urlpatterns += [
     path("times/date/<str:pk>/<str:hour>", views.newDate, name="new-date"),
     path("time/<int:pk>/update/", views.TimesUpdateView.as_view(), name="time_update"),
     path("time_detail/<int:pk>/", views.TimesUpdateView.as_view(), name="times_detail"),
+    path("new-date/", views.newDateForm, name='new-date-form')
 ]
 
 # urls de los servicios:
