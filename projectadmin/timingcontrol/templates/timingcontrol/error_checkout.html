@@ -1,0 +1,23 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+{% block title %} <title>Checkout Error</title> {% endblock title %}  
+
+
+<div class="alert alert-danger my-5" role="alert">
+    {% if checkoutDone %}
+   <span> check-out Error. {{checkoutDone}}</span>
+   {% else %}
+   <span> check-out Error. You have not done <b>check-in</b> previusly.</span>
+   {% endif %}
+  </div>
+
+
+ <p>
+    <a class="btn btn-outline-danger" href="{% url 'logout' %}?next={% url 'index' %}">Logout</a>
+    <a class="btn btn-primary" href="{% url 'index' %}">Back to home</a>
+
+ </p> 
+
+
+{% endblock content %}

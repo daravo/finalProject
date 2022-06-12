@@ -1,3 +1,4 @@
+from ast import Delete
 from django.db import models
 from django.urls import reverse
 import uuid
@@ -64,6 +65,7 @@ class Worker(models.Model):
 #Modificando la clase User:
 class Useres(User):
     worker_id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='unique ID by user/worker')
+
     JOBS = (
         ('Tapper', 'Tapper'),
         ('Painter', 'Painter'),
@@ -72,13 +74,42 @@ class Useres(User):
     )
     job = models.CharField(max_length=20, choices=JOBS, blank=True, default='bui', help_text='Job of worker')
     dni = models.CharField(max_length=10)
+    
+    #Mostrar ordenación por apellido
+    class Meta:
+        ordering = ["last_name"]
+        
     def __str__(self):
         return '%s %s' % (self.first_name, self.last_name)
         
     def get_absolute_url(self):
         return reverse('user_detail', args=[str(self.worker_id)])
     
-#-----------    
+#tabla usuario-checkins
+class Times(models.Model):
+    """
+    Modelo que guarda las entradas del usuario
+    """
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    project_id = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
+    timeEntry = models.TimeField(null=True, blank=True)
+    timeExit = models.TimeField(null=True, blank=True, default='00:00')
+    worked_hours = models.FloatField(null=True, blank=True, default=0)
+    
+    class Meta:
+        ordering = ['date']
+        
+    def __str__(self):
+        return '%s %s %s' % (self.user_id, self.project_id, self.date)
+    
+    def get_absolute_url(self):
+        return reverse("times_detail", args=[str(self.id)])
+    
+        
+    
+    
+    #-----------    
 """ 
 from django.urls import reverse #Used to generate URLs by reversing the URL patterns
 

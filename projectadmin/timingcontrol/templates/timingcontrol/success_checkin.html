@@ -1,0 +1,17 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+{% block title %} <title>Checkin Success</title> {% endblock title %}  
+
+<div class="alert alert-success my-5" role="alert">
+    check-in done correctly
+  </div>
+
+ <p>
+    <a class="btn btn-outline-danger" href="{% url 'logout' %}?next={% url 'index' %}">Logout</a>
+    <a class="btn btn-primary" href="{% url 'index' %}">Back to home</a>
+
+ </p> 
+
+
+{% endblock content %}

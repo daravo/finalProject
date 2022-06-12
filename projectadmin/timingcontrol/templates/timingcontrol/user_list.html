@@ -1,31 +1,13 @@
 {% extends 'base_generic.html' %} {% block content %} {% block title %}
 <title>Employees</title> {% endblock title %}
-<h1>Workers list</h1>
+<h1 class="mt-5">Workers list</h1>
 
 {% if useres_list %}
 <div id="app" class="container">
-  <div class="col-lg-6 form-group">
-    <label>Nombre</label>
-    <input type="text" class="form-control" v-model="name" />
-  </div>
-  <div class="col-lg-6 form-group">
-    <label>Apellidos</label>
-    <input type="text" class="form-control" v-model="last_name" />
-  </div>
-  <div class="col-lg-6 form-group">
-    <label>Job</label>
-    <input type="text" class="form-control" v-model="job" />
-  </div>
-  <div class="col-lg-6 form-group">
-    <label>Buscar</label>
-    <input
-      placeholder="Buscar..."
-      type="text"
-      class="form-control"
-      v-model="kword"
-    />
-  </div>
-<p>[[kword]]</p>
+
+    <a href="{% url 'create_user' %}" class="btn btn-primary my-5">Create new user</a>
+    <br>
+<div class="table-responsive">
   <table class="table table-primary table-striped table-hover">
     <thead>
       <tr>
@@ -33,6 +15,7 @@
         <th scope="col">Last name</th>
         <th scope="col">First name</th>
         <th scope="col">Email</th>
+        <th scope="col">Job</th>
         <th scope="col">Actions</th>
       </tr>
     </thead>
@@ -43,13 +26,14 @@
         <td>{{user.last_name}}</td>
         <td>{{user.first_name}}</td>
         <td>{{user.email}}</td>
+        <td>{{user.job}}</td>
         <td>    
-          <span><a class="btn btn-outline-danger"
+          <span><a class="btn btn-outline-danger mt-1 w-100"
             href="{% url 'user_delete' user.worker_id %}"
             >Delete user</a
           >
           <a
-            class="btn btn-outline-info"
+            class="btn btn-outline-info mt-1 w-100"
             href="{% url 'user_update' user.worker_id %}"
             >Update user</a
           ></span
@@ -59,14 +43,11 @@
     </tbody>
   </table>
 </div>
+
+
+</div>
 {% else %}
 <p>There are no workers registered</p>
 {% endif %}
-<!--
-{% block vue %} {% load static %}
-<script src="{% static 'js/worker_search.js' %}"></script>
-{% endblock vue %} 
--->
-
 
 {% endblock content %}

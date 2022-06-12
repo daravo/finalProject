@@ -1,0 +1,17 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+{% block title %} <title>Times</title> {% endblock title %}  
+<h1>Times list</h1>
+
+{% if times_list %}
+<ul>
+    {% for time in times_list  %}
+    <li><a href="{{ time.get_absolute_url }}">{{ time.id }}</a> ({{ time.user_id }}) - {{time.project_id}} - {{time.date}} - {{time.timeEntry}} - {{time.timeExit}} - {{time.worked_hours}} </li>
+    
+    {% endfor %}
+</ul>
+{% else %}
+<p>There are no Times registered</p>
+{% endif %}
+{% endblock content %}

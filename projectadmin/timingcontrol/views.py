@@ -1,3 +1,5 @@
+from time import strftime
+from xmlrpc.client import DateTime
 from rest_framework.generics import ListAPIView
 from .serializers import WorkerSerializer, ProjectSerializer
 from sqlite3 import IntegrityError
@@ -9,11 +11,20 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, permission_required #decorador para funciones
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin #mixin que restringe en clases (vistas basadas en clases)
-from .models import Project, Worker, Useres
+from .models import Project, Worker, Useres, Times
 import datetime
 from .forms import RenewBookForm, CreateWorkerModelForm #Importando formularios
+import sqlite3
 
-#@login_required
+con = sqlite3.connect('project_db.sqlite3', check_same_thread=False)
+
+def sentencias (con, sentencia, listaDatos):#Recibe una sentencia SQL y una lista con los datos
+
+    cursorObj = con.cursor()
+    cursorObj.execute(sentencia,listaDatos)
+    con.commit()
+
+@login_required
 def index(request):
     num_projects = Project.objects.all().count()
     projects = Project.objects.all()
@@ -142,7 +153,27 @@ class ProjectListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListV
 class ProjectDetailView(PermissionRequiredMixin, LoginRequiredMixin, generic.DetailView):
     model = Project    
     permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
-   
+#-------------------------TIMES----------------
+class TimestListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListView):
+    permission_required = ('timingcontrol.can_edit', )
+    model = Times
+    paginate_by = 10
+    
+class TimesUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    permission_required = ('timingcontrol.can_edit', )
+    model = Times
+    fields = '__all__'
+    
+class TimesDetailView(PermissionRequiredMixin, LoginRequiredMixin, generic.DetailView):
+    permission_required = ('timingcontrol.can_edit', )
+    model = Times
+  
+class TimesCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required =  ('timingcontrol.can_edit', )
+    model = Times
+    fields = '__all__'
+
+    
     """
     ejemplos
     """
@@ -164,35 +195,7 @@ def worker_detail_view(request, pk):
     """
     
     """
-@permission_required('catalog.can_mark_returned')
-def renew_book_librarian(request, pk):
-    """
-    View function for renewing a specific BookInstance by librarian
-    """
-    book_inst=get_object_or_404(BookInstance, pk = pk)
 
-    # If this is a POST request then process the Form data
-    if request.method == 'POST':
-
-        # Create a form instance and populate it with data from the request (binding):
-        form = RenewBookForm(request.POST)
-
-        # Check if the form is valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            book_inst.due_back = form.cleaned_data['renewal_date']
-            book_inst.save()
-
-            # redirect to a new URL:
-            return HttpResponseRedirect(reverse('all-borrowed') )
-
-    # If this is a GET (or any other method) create the default form.
-    else:
-        proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
-        form = RenewBookForm(initial={'renewal_date': proposed_renewal_date,})
-
-    return render(request, 'catalog/book_renew_librarian.html', {'form': form, 'bookinst':book_inst})
-    
 """aquí empiezan los servicios
 """
 class WorkerListApiView(ListAPIView):
@@ -209,4 +212,102 @@ class ProjectListApiView(ListAPIView):
         kword = self.request.query_params.get('kword', '')
         return Project.objects.filter(name__icontains = kword)
     
+def newDate(request, pk, hour):
+    print(request.__dict__)
+    fecha = pk
+    hora = hour
+    print('fecha recogida en el back ', fecha, '\nhora recogida en el back ',hora)
+    return index(request)
+
+def checkOutForm(request):
+    datos = []
+    datosConsulta = []
+    registroFecha = request.POST.get('registroFecha')
+    registroHora = request.POST.get('registroHora')
+    projectId = request.POST.get('projectId')
+    userId = request.POST.get('userId')
     
+    datosConsulta.append(projectId)
+    datosConsulta.append(registroFecha)
+    datosConsulta.append(userId)
+    #Asegurarse primero que el checkin se ha hecho, para poder hacer checkout:
+    sentenciaConsulta = 'SELECT * from timingcontrol_times where project_id_id = ? and date = ? and user_id_id = ?;'
+    cur = con.cursor()
+    cur.execute(sentenciaConsulta,datosConsulta)
+    resultado = cur.fetchone()
+    print(resultado)
+    if resultado == None: #Si no existe registro con la misma fecha, proyecto y usuario, lanzo mensaje de error porque no se ha hecho checking
+        return render(request, 'timingcontrol/error_checkout.html')
+    elif resultado[3] == None: 
+        worked_hours = 0  
+        #Calcular horas de fin  
+        horaFin = registroHora.split(':')
+        worked_hours += int(horaFin[0])
+        if int(horaFin[1])>30:
+            worked_hours += 0.5
+        #Calcular horas de inicio:
+        horaInicio = resultado[2].split(':') #Esta es la hora de inicio
+        worked_hours -= int(horaInicio[0])
+        if int(horaInicio[1])>30:
+            worked_hours -= 0.5
+
+        #Modificar en base de datos la hora de salida:
+        datos.append(registroHora)
+        datos.append(projectId)
+        datos.append(registroFecha)
+        datos.append(userId)
+        
+        sentenciaModificar = "UPDATE timingcontrol_times SET timeExit = ? WHERE project_id_id = ? and date = ? and user_id_id = ?;"
+        sentencias(con,sentenciaModificar,datos)
+        
+        #Modificar las horas trabajadas:
+        datos = []
+        datos.append(worked_hours)
+        datos.append(projectId)
+        datos.append(registroFecha)
+        datos.append(userId)
+        
+        sentenciaModificar = "UPDATE timingcontrol_times SET worked_hours = ? WHERE project_id_id = ? and date = ? and user_id_id = ?;"
+        sentencias(con,sentenciaModificar,datos)
+     
+        #Redirigir a esta altura a una pantalla de éxito
+        return render(request, 'timingcontrol/success_checkout.html')
+    else: #Si llega a este else, es porque ya se había hecho antes un checkout para este mismo día y proyecto.
+        return render(request, 'timingcontrol/error_checkout.html', context={'checkoutDone':'Check-out already done before'})
+    
+def newDateForm(request):
+    datos = []
+    datosConsulta = []
+    registroFecha = request.POST.get('registroFecha')
+    datos.append(registroFecha)
+    registroHora = request.POST.get('registroHora')
+    datos.append(registroHora)
+    projectId = request.POST.get('projectId')
+    datos.append(projectId)
+    userId = request.POST.get('userId')
+
+    datos.append(userId)
+    
+    datosConsulta.append(projectId)
+    datosConsulta.append(registroFecha)
+    datosConsulta.append(userId)
+    
+    #consultar si existe ya el checkin para evitar checkin duplicados en el mismo día:
+    sentenciaConsulta = 'SELECT * from timingcontrol_times where project_id_id = ? and date = ? and user_id_id = ?;'
+    cur = con.cursor()
+    cur.execute(sentenciaConsulta,datosConsulta)
+    resultado = cur.fetchone()
+    print(resultado)
+    if resultado == None: #Si no existe registro con la misma fecha, proyecto y usuario, le doy de alta
+        sentenciaAlta = 'INSERT INTO timingcontrol_times(date, timeEntry, project_id_id, user_id_id) VALUES(?, ?, ?, ?);'
+        sentencias(con,sentenciaAlta,datos)
+        #Redirigir a esta altura a una pantalla de éxito
+        return render(request, 'timingcontrol/success_checkin.html')
+    else:
+        #Redirigir a pantalla advirtiendo que ya se ha hecho el checkin para este día en este proyecto
+        return render(request, 'timingcontrol/error_checkin.html')
+    
+
+# CONSULTAR HORAS HECHAS POR MES DE UN TRABAJADOR EN CONCRETO
+# select sum(timeExit) from timingcontrol_times 
+# where (date BETWEEN '2022-06-01' AND '2022-06-31') and user_id_id = 1

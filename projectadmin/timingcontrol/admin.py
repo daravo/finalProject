@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Worker, Project, Useres
+from .models import Worker, Project, Useres, Times
 
 
 # Register your models here.
@@ -24,4 +24,8 @@ class WorkerAdmin(admin.ModelAdmin):
 
 @admin.register(Useres)
 class UserAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Times)
+class TimesAdmin(admin.ModelAdmin):
     pass
