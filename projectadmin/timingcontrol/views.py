@@ -1,3 +1,5 @@
+from time import strftime
+from xmlrpc.client import DateTime
 from rest_framework.generics import ListAPIView
 from .serializers import WorkerSerializer, ProjectSerializer
 from sqlite3 import IntegrityError
@@ -22,7 +24,7 @@ def sentencias (con, sentencia, listaDatos):#Recibe una sentencia SQL y una list
     cursorObj.execute(sentencia,listaDatos)
     con.commit()
 
-#@login_required
+@login_required
 def index(request):
     num_projects = Project.objects.all().count()
     projects = Project.objects.all()
@@ -217,6 +219,62 @@ def newDate(request, pk, hour):
     print('fecha recogida en el back ', fecha, '\nhora recogida en el back ',hora)
     return index(request)
 
+def checkOutForm(request):
+    datos = []
+    datosConsulta = []
+    registroFecha = request.POST.get('registroFecha')
+    registroHora = request.POST.get('registroHora')
+    projectId = request.POST.get('projectId')
+    userId = request.POST.get('userId')
+    
+    datosConsulta.append(projectId)
+    datosConsulta.append(registroFecha)
+    datosConsulta.append(userId)
+    #Asegurarse primero que el checkin se ha hecho, para poder hacer checkout:
+    sentenciaConsulta = 'SELECT * from timingcontrol_times where project_id_id = ? and date = ? and user_id_id = ?;'
+    cur = con.cursor()
+    cur.execute(sentenciaConsulta,datosConsulta)
+    resultado = cur.fetchone()
+    print(resultado)
+    if resultado == None: #Si no existe registro con la misma fecha, proyecto y usuario, lanzo mensaje de error porque no se ha hecho checking
+        return render(request, 'timingcontrol/error_checkout.html')
+    elif resultado[3] == None: 
+        worked_hours = 0  
+        #Calcular horas de fin  
+        horaFin = registroHora.split(':')
+        worked_hours += int(horaFin[0])
+        if int(horaFin[1])>30:
+            worked_hours += 0.5
+        #Calcular horas de inicio:
+        horaInicio = resultado[2].split(':') #Esta es la hora de inicio
+        worked_hours -= int(horaInicio[0])
+        if int(horaInicio[1])>30:
+            worked_hours -= 0.5
+
+        #Modificar en base de datos la hora de salida:
+        datos.append(registroHora)
+        datos.append(projectId)
+        datos.append(registroFecha)
+        datos.append(userId)
+        
+        sentenciaModificar = "UPDATE timingcontrol_times SET timeExit = ? WHERE project_id_id = ? and date = ? and user_id_id = ?;"
+        sentencias(con,sentenciaModificar,datos)
+        
+        #Modificar las horas trabajadas:
+        datos = []
+        datos.append(worked_hours)
+        datos.append(projectId)
+        datos.append(registroFecha)
+        datos.append(userId)
+        
+        sentenciaModificar = "UPDATE timingcontrol_times SET worked_hours = ? WHERE project_id_id = ? and date = ? and user_id_id = ?;"
+        sentencias(con,sentenciaModificar,datos)
+     
+        #Redirigir a esta altura a una pantalla de éxito
+        return render(request, 'timingcontrol/success_checkout.html')
+    else: #Si llega a este else, es porque ya se había hecho antes un checkout para este mismo día y proyecto.
+        return render(request, 'timingcontrol/error_checkout.html', context={'checkoutDone':'Check-out already done before'})
+    
 def newDateForm(request):
     datos = []
     datosConsulta = []
@@ -227,6 +285,7 @@ def newDateForm(request):
     projectId = request.POST.get('projectId')
     datos.append(projectId)
     userId = request.POST.get('userId')
+
     datos.append(userId)
     
     datosConsulta.append(projectId)
@@ -238,7 +297,7 @@ def newDateForm(request):
     cur = con.cursor()
     cur.execute(sentenciaConsulta,datosConsulta)
     resultado = cur.fetchone()
-    resultado = str(resultado)
+    print(resultado)
     if resultado == None: #Si no existe registro con la misma fecha, proyecto y usuario, le doy de alta
         sentenciaAlta = 'INSERT INTO timingcontrol_times(date, timeEntry, project_id_id, user_id_id) VALUES(?, ?, ?, ?);'
         sentencias(con,sentenciaAlta,datos)
@@ -249,3 +308,6 @@ def newDateForm(request):
         return render(request, 'timingcontrol/error_checkin.html')
     
 
+# CONSULTAR HORAS HECHAS POR MES DE UN TRABAJADOR EN CONCRETO
+# select sum(timeExit) from timingcontrol_times 
+# where (date BETWEEN '2022-06-01' AND '2022-06-31') and user_id_id = 1

@@ -21,15 +21,30 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <form action="{% url 'new-date-form' %}" method="post">
-        {% csrf_token %}
-        <input type="text" name="userId" value="{{user.id}}">
-        <input type="text" name="projectId" :value="id_project_selected">
-        <input type="text" name="projectName" :value="project_selected">
-        <input type="date" name="registroFecha" :value="fecha">
-        <input type="time" name="registroHora":value="hora">
-        <button type="submit" class="btn btn-primary">Realizar <span v-if="check_in">check-in</span><span v-if="check_out">check-out</span></button>
-       </form>
+        <div v-if="check_in">
+           <form action="{% url 'new-date-form' %}" method="post">
+            {% csrf_token %}
+            <input hidden type="text" name="userId" value="{{user.id}}">
+            <input hidden type="text" name="projectId" :value="id_project_selected">
+            <input hidden type="text" name="projectName" :value="project_selected">
+            <input hidden type="date" name="registroFecha" :value="fecha">
+            <input hidden type="time" name="registroHora":value="hora">
+            <button type="submit" class="btn btn-primary">Realizar check-in</button>
+          </form>
+        </div>
+
+        <div v-if="check_out">
+          <form action="{% url 'check-out-form' %}" method="post">
+           {% csrf_token %}
+           <input hidden type="text" name="userId" value="{{user.id}}">
+           <input hidden type="text" name="projectId" :value="id_project_selected">
+           <input hidden type="text" name="projectName" :value="project_selected">
+           <input hidden type="date" name="registroFecha" :value="fecha">
+           <input hidden type="time" name="registroHora":value="hora">
+           <button type="submit" class="btn btn-primary">Realizar check-out</button>
+         </form>
+       </div>
+       
       </div>
     </div>
   </div>

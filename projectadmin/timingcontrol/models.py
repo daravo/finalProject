@@ -1,3 +1,4 @@
+from ast import Delete
 from django.db import models
 from django.urls import reverse
 import uuid
@@ -64,6 +65,7 @@ class Worker(models.Model):
 #Modificando la clase User:
 class Useres(User):
     worker_id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='unique ID by user/worker')
+
     JOBS = (
         ('Tapper', 'Tapper'),
         ('Painter', 'Painter'),
@@ -88,11 +90,11 @@ class Times(models.Model):
     """
     Modelo que guarda las entradas del usuario
     """
-    user_id = models.ForeignKey(Useres, on_delete=models.SET_NULL, null=True, blank=True)
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     project_id = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True)
     date = models.DateField(null=True, blank=True)
     timeEntry = models.TimeField(null=True, blank=True)
-    timeExit = models.TimeField(null=True, blank=True)
+    timeExit = models.TimeField(null=True, blank=True, default='00:00')
     worked_hours = models.FloatField(null=True, blank=True, default=0)
     
     class Meta:

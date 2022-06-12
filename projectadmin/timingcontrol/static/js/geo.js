@@ -38,10 +38,13 @@ Vue.component("proyecto", {
       if (segundos<10){
         segundos = '0'+segundos;
       }
-      this.hora = hora+':'+minutos+':'+segundos;
+      this.hora = hora+':'+minutos;
+     
       this.project_selected = project;
       this.$root.project_selected = project;
       this.$root.id_project_selected = idproject;
+      this.$root.hora = this.hora;
+      this.$root.fecha = this.fecha;
       console.log('fecha guardada', this.fecha, 'hora guardada',this.hora);  
     },
   },
