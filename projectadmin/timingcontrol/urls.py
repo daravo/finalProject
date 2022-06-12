@@ -37,8 +37,7 @@ urlpatterns += [
         name="project_delete",
     ),
     url(r"^projects/$", views.ProjectListView.as_view(), name="projects"),
-    path(
-        "project-detail/<int:pk>",
+    url(r"project-detail/(?P<pk>\d+)/$",
         views.ProjectDetailView.as_view(),
         name="project-detail",
     ),

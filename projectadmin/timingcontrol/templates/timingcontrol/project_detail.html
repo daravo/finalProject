@@ -2,13 +2,21 @@
 
 {% block content %}
 {% block title %} <title>{{ project.name }} </title> {% endblock title %}
-<h1>{{ project.name }} {{ project.city }}</h1>
+<div class="container">
+  <h1 class="my-5">{{ project.name }} - {{ project.city }}</h1>
 
-<p><b>Name: </b> {{project.name}} </p>
-<p><b>address: </b> {{project.address}} </p>
-<p><b>city: </b> {{project.city}} </p>
-<p><b>lat_long: </b> {{project.lat_long}} </p>
-<p><b>factured: </b> {{project.factured}} </p>
+  <p><b>Name: </b> {{project.name}} </p>
+  <p><b>Address: </b> {{project.address}} </p>
+  <p><b>City: </b> {{project.city}} </p>
+  <p><b>Coordenates: </b> {{project.lat_long}} </p>
+  <p><b>Factured: </b> {{project.factured}} </p>
+  
+  <div class="mt-4">
+    <a class="btn btn-danger" href="{% url 'project_delete' project.id %}">Delete project</a>
+    <a class="btn btn-info" href="{% url 'project_update' project.id %}">Update project</a>
+  </div>
+</div>
+
 
 {% endblock content %}
 <!-- Ejemplo con loop -->

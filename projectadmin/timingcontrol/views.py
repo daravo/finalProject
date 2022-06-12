@@ -125,7 +125,7 @@ class UseresCreate(CreateView):
    
 class UseresUpdate(UpdateView):
     model = Useres
-    fields = ('username', 'first_name','last_name','email','password','groups','is_active')
+    fields = ('first_name','last_name','email','groups','is_active')
     template_name = 'timingcontrol/user_form.html'
 class UseresDelete(DeleteView):
     model = Useres

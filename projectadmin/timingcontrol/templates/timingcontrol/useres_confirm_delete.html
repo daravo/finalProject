@@ -3,15 +3,15 @@
 {% block content %}
 
 <div class="container"></div>
-<h1 class="my-5">Delete Project</h1>
+<h1 class="my-5">Delete Employee</h1>
 
-<p>Are you sure you want to delete the project: {{ project }}?</p>
+<p>Are you sure you want to delete the employee: {{ useres }}?</p>
 
 
   <form action="" method="POST">
     {% csrf_token %}
     <input class="btn btn-danger" type="submit" action="" value="Yes, delete." />
-    <a class="btn btn-primary" href="{% url 'projects' %}">No, go to projects</a>
+    <a class="btn btn-primary" href="{% url 'users' %}">No, go to employees</a>
   </form>
 </div>
 
