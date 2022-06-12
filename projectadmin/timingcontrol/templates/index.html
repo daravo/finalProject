@@ -2,14 +2,14 @@
 {% block content %}
 
 {% block title %} <title>Home</title> {% endblock title %}
-<h1 class="my-5">Bienvenid@</h1>
+<h1 class="my-5">Welcome</h1>
 
 <div id="app" class="container">
   <!--Modal-->
 
 <!-- Modal -->
 <div class="modal fade" id="modalCheckin" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalCheckinLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalCheckinLabel">Registrar <span v-if="check_in">check-in</span><span v-if="check_out">check-out</span></h5>
@@ -20,7 +20,7 @@
        
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <div v-if="check_in">
            <form action="{% url 'new-date-form' %}" method="post">
             {% csrf_token %}
@@ -29,7 +29,7 @@
             <input hidden type="text" name="projectName" :value="project_selected">
             <input hidden type="date" name="registroFecha" :value="fecha">
             <input hidden type="time" name="registroHora":value="hora">
-            <button type="submit" class="btn btn-primary">Realizar check-in</button>
+            <button type="submit" class="btn btn-primary">Confirm check-in</button>
           </form>
         </div>
 
@@ -41,7 +41,7 @@
            <input hidden type="text" name="projectName" :value="project_selected">
            <input hidden type="date" name="registroFecha" :value="fecha">
            <input hidden type="time" name="registroHora":value="hora">
-           <button type="submit" class="btn btn-primary">Realizar check-out</button>
+           <button type="submit" class="btn btn-primary">Confirm check-out</button>
          </form>
        </div>
        
@@ -51,31 +51,33 @@
 </div>
   <!-- fin modal -->
 
-    <div v-if="!check_in && !check_out" class="row row-cols-2">
+    <div v-if="!check_in && !check_out" class="row row-cols-md-2 row-cols-1">
        <div class="col">
             <div class="card bg-success" @click="geolocalizar(); check_in=true; check_out=false">             
                 {% load static %}
                 <img src="{% static 'images/checkin.jpg' %}" width='100%' class="card-img-top" >
                 <div class="card-body">
-                    <a class="stretched-link"><p class="card-text">Check-in</p></a>
+                    <p class="card-text text-center fw-bold">Check-in</p>
                 </div>
               </div>
         </div>
-        <div class="col">
+        <div class="col mt-5 mt-md-0">
             <div class="card bg-warning" @click="geolocalizar(); check_in=false; check_out=true">
                 {% load static %}
                 <img src="{% static 'images/checkout.jpg' %}" width='100%' class="card-img-top" >
                 <div class="card-body">
-                  <p class="card-text">Check-out</p>
+                  <p class="card-text text-center fw-bold">Check-out</p>
                 </div>
               </div>
         </div>
     </div>
     <div v-if="check_in || check_out" >
+      <h1 v-if="check_in" class="my-5">Realizar CHECK-IN</h1>
+      <h1 v-if="check_out" class="my-5">Realizar CHECK-OUT</h1>
       <span class="btn btn-outline-primary" @click="check_in=false; check_out=false">Atrás</span>
       
       <p> Posicion aproximada: </p>
-      <div id="mapcanvas" style="width:400px; height:400px"></div>
+      <div class="mx-auto" id="mapcanvas" style="width:280px; height:400px"></div>
 
 
       <div v-if="project_around.length>0" class="mt-5 text-center">
@@ -102,25 +104,6 @@
 
     
     <!--termina el app-->
-
-  
-
-<p><b>Número de trabajadores: </b> {{workers}} </p>
-<p><b>Número de proyectos: </b>{{num_projects}}</p>
-<p><b>Número de visitas a esta página: </b> {{num_visits}} </p>
-<ul>
-    {% for proyecto in projects %}
-    <li>{{proyecto.name}} en {{ proyecto.city }}</li>
-    {% endfor %}
-</ul>
-
-<p>Trabajadores</p>
-<ul>
-    {% for trabajador in workers %}
-    <li> {{trabajador.name}}, {{trabajador.job}} </li>
-    {% endfor %}
-</ul>
-
 </div>
 
 

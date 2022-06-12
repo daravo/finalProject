@@ -26,17 +26,17 @@
       crossorigin="anonymous"
     ></script>
     {% load static %}
-    <link  rel="icon"   href="{% static 'images/descarga.png' %}" type="image/png" />
+    <link  rel="icon"   href="{% static 'images/15.svg' %}" type="image/png" />
     <!-- Add additional CSS in static file -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
   </head>
   <body>
     {% block header %}
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark bg-black">
       <div class="container-fluid">
         <button
-          class="navbar-toggler"
+          class="navbar-toggler mb-2"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarHeader"
@@ -47,9 +47,9 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarHeader">
-          <a class="navbar-brand" href="{% url 'index' %}">
+          <a class="navbar-brand text-center" href="{% url 'index' %}">
             {% load static %}
-          <img src="{% static 'images/descarga.png' %}" alt="My image"/>
+          <img src="{% static 'images/10.svg' %}" class="" width="150px" alt="My image"/>
           </a>
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">

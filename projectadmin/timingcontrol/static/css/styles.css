@@ -1,5 +1,5 @@
 body{
-    background-color: #219ebc;
+    background-color: #DEE5E5;
 }
 img{
     background-color: transparent;
@@ -23,3 +23,8 @@ a, a:hover{
 .card, .card:hover {
     cursor: pointer !important;
 }
+
+.rounded_logo {
+    border-radius: 80%;
+}
+
