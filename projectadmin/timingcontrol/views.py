@@ -152,7 +152,8 @@ class UseresCreate(CreateView):
         # Mensaje si se ha enviado el mail:
         messages.success(self.request, 'Mail send correctly')
         print('PASO POR CONTACT')
-        return redirect(self.success_url)
+        
+        return super().form_valid(form)
 class UseresUpdate(UpdateView):
     model = Useres
     fields = ('first_name','last_name','email','groups','is_active')
