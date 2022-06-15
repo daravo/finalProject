@@ -8,10 +8,17 @@
         <table class="table">
         {{ form.as_table }}
         </table>
+
         <input class="form-control btn btn-success" type="submit" value="Submit" />
     
     </form>
   
 </div>
+<script>
+    let element = document.getElementById('id_password');
+    element.value = '1Ab*234jfaO';
+    // element.setAttribute('style', "visibility:hidden");
+    // element.parentElement.parentElement.setAttribute('style', "visibility:hidden")
 
+</script>
 {% endblock %}
