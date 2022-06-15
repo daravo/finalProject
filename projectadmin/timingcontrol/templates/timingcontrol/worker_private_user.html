@@ -1,12 +1,12 @@
 {% extends 'base_generic.html' %}
 
 {% block content %}
-    <h1>Welcome {{user.get_username}}</h1>
+    <h1 class="mt-5">Welcome {{user.get_username}}</h1>
 
-    {% if worker_list %}
+    {% if useres_list %}
     <ul>
-        {% for worker in worker_list %}
-        <li> {{worker.name}} {{worker.surname}} <a class='btn btn-outline-info' href="{% url 'worker-detail' worker.id %}">Go to perfil</a></li>
+        {% for worker in useres_list %}
+        <li> {{worker.first_name}} {{worker.last_name}} <a class='btn btn-outline-info' href="{% url 'user_detail' worker.worker_id %}">Go to perfil</a></li>
         {% endfor %}
     </ul>
 

@@ -22,7 +22,6 @@ from django.conf import settings
 con = sqlite3.connect('project_db.sqlite3', check_same_thread=False)
 
 def sentencias (con, sentencia, listaDatos):#Recibe una sentencia SQL y una lista con los datos
-
     cursorObj = con.cursor()
     cursorObj.execute(sentencia,listaDatos)
     con.commit()
@@ -51,18 +50,15 @@ class WorkerListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListVi
 class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
     model = Worker
 
-    """
-    Vista que me muestra el enlace al perfil exacto del trabajador logueado
-
-    """
 class WorkerByUserListView(LoginRequiredMixin, generic.ListView):
-    model = Worker
+    model = Useres
     template_name = 'timingcontrol/worker_private_user.html'
     
     def get_queryset(self):
-        return Worker.objects.filter(usernameid = self.request.user)
+        return Useres.objects.filter(user_ptr_id = self.request.user.id)
     
-class UseresListView(LoginRequiredMixin, generic.ListView):
+class UseresListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListView):
+    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
     model = Useres
     template_name = 'timingcontrol/user_list.html'
 
@@ -106,20 +102,24 @@ def createUser(request, rol): #El grupo se lo paso en la url
         context={'respuesta':respuesta}
     )
 
-class WorkerCreate(CreateView):
+class WorkerCreate(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
     model = Worker
     fields = '__all__'
     
-class WorkerUpdate(UpdateView):
+class WorkerUpdate(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
     model = Worker
     fields = '__all__'
         
-class WorkerDelete(DeleteView):
+class WorkerDelete(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
     model = Worker
     success_url = reverse_lazy('workers')#Cuando borra el usuario, vuelve a la lista de usuarios   
 
 #------------USERS---------------------
-class UseresCreate(CreateView):
+class UseresCreate(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
     model = Useres
     #fields = '__all__'
     fields = ('id','username','dni','job', 'first_name','last_name','email','password','groups','is_active')
@@ -154,24 +154,30 @@ class UseresCreate(CreateView):
         print('PASO POR CONTACT')
         
         return super().form_valid(form)
-class UseresUpdate(UpdateView):
+
+class UseresUpdate(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
     model = Useres
-    fields = ('first_name','last_name','email','groups','is_active')
+    fields = ('first_name','last_name','email', 'job', 'groups','is_active')
     template_name = 'timingcontrol/user_form.html'
-class UseresDelete(DeleteView):
+class UseresDelete(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
     model = Useres
     success_url = reverse_lazy('users')#Cuando borra el usuario, vuelve a la lista de usuarios   
    
 #------------------PROJECTS-------------
-class ProjectCreate(CreateView):
+class ProjectCreate(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
     model = Project
     fields = '__all__'
     
-class ProjectUpdate(UpdateView):
+class ProjectUpdate(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
     model = Project
     fields = '__all__'
     
-class ProjectDelete(DeleteView):
+class ProjectDelete(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
     model = Project
     success_url = reverse_lazy('projects')
     
@@ -181,9 +187,9 @@ class ProjectListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListV
     model = Project
     paginate_by = 10
     
-class ProjectDetailView(PermissionRequiredMixin, LoginRequiredMixin, generic.DetailView):
+class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
     model = Project    
-    permission_required = ('timingcontrol.can_edit', 'timingcontrol.can_mark_factured')
+
 #-------------------------TIMES----------------
 class TimestListView(PermissionRequiredMixin, LoginRequiredMixin, generic.ListView):
     permission_required = ('timingcontrol.can_edit', )
