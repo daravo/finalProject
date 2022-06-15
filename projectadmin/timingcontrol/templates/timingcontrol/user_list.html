@@ -2,6 +2,14 @@
 <title>Employees</title> {% endblock title %}
 <h1 class="mt-5">Workers list</h1>
 
+{% if messages%}
+  {% for message in messages %}
+  <div class="alert alert-success" role="alert">
+    <span><i class="bi bi-check-all"></i> User created correctly. User must create a password throught the link sent by email</span>
+  </div>
+  {% endfor %}
+{% endif %}
+
 {% if useres_list %}
 <div id="app" class="container">
 
@@ -22,7 +30,7 @@
     <tbody>
       {% for user in useres_list %}
       <tr class="align-middle">
-        <td>{{user.username}}</td>
+        <td><a class="btn btn-success" href="{% url 'user_detail' user.worker_id %}">Watch more</a></td>
         <td>{{user.last_name}}</td>
         <td>{{user.first_name}}</td>
         <td>{{user.email}}</td>

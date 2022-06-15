@@ -1,9 +1,7 @@
-from time import strftime
-from xmlrpc.client import DateTime
 from rest_framework.generics import ListAPIView
 from .serializers import WorkerSerializer, ProjectSerializer
 from sqlite3 import IntegrityError
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -15,6 +13,11 @@ from .models import Project, Worker, Useres, Times
 import datetime
 from .forms import RenewBookForm, CreateWorkerModelForm #Importando formularios
 import sqlite3
+from django.contrib import messages
+# Importaciones para mail:
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.conf import settings
 
 con = sqlite3.connect('project_db.sqlite3', check_same_thread=False)
 
@@ -120,9 +123,36 @@ class UseresCreate(CreateView):
     model = Useres
     #fields = '__all__'
     fields = ('id','username','dni','job', 'first_name','last_name','email','password','groups','is_active')
-    template_name = 'timingcontrol/user_form.html'
+    template_name = 'timingcontrol/user_form_create.html'
     success_url = reverse_lazy('users')#Cuando borra el usuario, vuelve a la lista de usuarios   
-   
+    def form_valid(self, form):
+        name = self.request.POST['first_name']
+        email = self.request.POST['email']
+        subject = 'Validate your User'
+        message = 'You must validate your email and set a password using the next link'
+        mailTo = email
+
+        template = render_to_string('email_template.html', {
+            'name': name,
+            'email': email,
+            'message': message
+        })
+
+        email = EmailMessage(
+            subject,
+            template,
+            settings.EMAIL_HOST_USER,
+            # Mail donde queremos que nos manden el email
+            [mailTo]
+        )
+
+        email.fail_silently = False #Para que no marque un error en el mail
+        email.send() #envío el mail
+
+        # Mensaje si se ha enviado el mail:
+        messages.success(self.request, 'Mail send correctly')
+        print('PASO POR CONTACT')
+        return redirect(self.success_url)
 class UseresUpdate(UpdateView):
     model = Useres
     fields = ('first_name','last_name','email','groups','is_active')
@@ -307,7 +337,7 @@ def newDateForm(request):
         #Redirigir a pantalla advirtiendo que ya se ha hecho el checkin para este día en este proyecto
         return render(request, 'timingcontrol/error_checkin.html')
     
-
+    
 # CONSULTAR HORAS HECHAS POR MES DE UN TRABAJADOR EN CONCRETO
 # select sum(timeExit) from timingcontrol_times 
 # where (date BETWEEN '2022-06-01' AND '2022-06-31') and user_id_id = 1

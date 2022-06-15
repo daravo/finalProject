@@ -2,27 +2,103 @@
 
 {% block content %}
 {% block title %} <title>{{ useres.first_name }} {{ useres.last_name }}</title> {% endblock title %}
-<h1>{{ useres.first_name }} {{ useres.last_name }}</h1>
+<div class="container">
 
-<p><b>DNI: </b> {{useres.dni}} </p>
-<p><b>Email: </b> {{useres.email}} </p>
-<p><b>Job: </b> {{useres.job}} </p>
+  <h1>{{ useres.first_name }} {{ useres.last_name }}</h1>
 
+  <p><b>DNI: </b> {{useres.dni}} </p>
+  <p><b>Email: </b> {{useres.email}} </p>
+  <p><b>Job: </b> {{useres.job}} </p>
 
-{% endblock content %}
-<!-- Ejemplo con loop -->
-<!-- <p><strong>Genre:</strong> {% for genre in book.genre.all %} {{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p> -->
+  <hr>
+  <h2>Project contributions</h2>
 
-<!-- Ejemplo con los set.all siendo Book la principal -->
-<!--
-     <h4>Copies</h4>
-
-    {% for copy in book.bookinstance_set.all %}
-    <hr>
-    <p class="{% if copy.status == 'a' %}text-success{% elif copy.status == 'm' %}text-danger{% else %}text-warning{% endif %}">{{ copy.get_status_display }}</p>
-    {% if copy.status != 'a' %}<p><strong>Due to be returned:</strong> {{copy.due_back}}</p>{% endif %}
-    <p><strong>Imprint:</strong> {{copy.imprint}}</p>
-    <p class="text-muted"><strong>Id:</strong> {{copy.id}}</p>
-    {% endfor %}
+  <div id="appContrib">
+    <table v-if="selected.length>0" class="table table-warning">
+      <tr>
+        <th>Project name</th>
+        <th>City</th>
+        <th>Total Hours</th>
+      </tr>
+      <tr v-for="project in selected">
+        <td>[[project.name]]</td>
+        <td>[[project.city]]</td>
+        <td>[[project.worked]]</td>
+      </tr>
+    </table>
+    <div v-else class="alert alert-warning" role="alert">
+      <i class="bi bi-info-circle-fill"></i> This employee has not participated in any project.
+    </div>
   </div>
--->
+  {% for time in useres.times_set.all %}
+    <p hidden name = "project_id">{{time.project_id_id}}</p>
+    <p hidden name = "project_name">{{time.project_id}}</p>
+    <p hidden name="worked_hours">{{time.worked_hours}}</p>
+  {% endfor %}
+
+</div>
+
+
+<script>
+  let vue = new Vue({
+  el: "#appContrib",
+  delimiters: ["[[", "]]"],
+  data: {
+    worked_hours: new Array(),
+    projects_id: new Array(),
+    project_names: new Array(),
+    projects: new Array(), //lleno con un array de objetos con los proyectos
+    selected: [],
+  },
+
+  mounted() {
+    document.getElementsByName('worked_hours').forEach(element => {
+    let hours = element.textContent;
+    if (hours == 'None'){
+      hours = 0;
+    }else{
+      hours = parseFloat(hours);
+    }
+    this.worked_hours.push(hours); 
+  });
+  document.getElementsByName('project_id').forEach(element =>{
+    this.projects_id.push(parseInt(element.textContent));
+  });
+  document.getElementsByName('project_name').forEach(element =>{
+    this.project_names.push(element.textContent);
+  });
+  // let selected = new Array();
+  axios.get("api/projects")
+      .then((response) =>{
+        this.projects = response.data;
+        console.log('proyectos axios ', this.projects);
+        this.projects = this.projects.map((element)=>{
+          if (this.projects_id.indexOf(element.id)>=0){
+            element.worked = 0;
+            this.selected.push(element);
+          }
+        });
+      
+        console.log('seleccionados', this.selected);
+        //Recorro los proyect_id
+        for (let i = 0; i < this.projects_id.length; i++) {
+          let pos = this.selected.findIndex(
+            (element) => element.id === this.projects_id[i]
+          );
+          console.log(pos)
+          this.selected[pos].worked += this.worked_hours[i];
+        }
+        console.log('así queda el objeto', this.selected)
+      })
+      .catch((error) => console.log(error));
+ 
+  console.log('id', this.projects_id, 'names', this.project_names, 'hours', this.worked_hours);
+  },
+  methods: {
+   
+  
+  },
+});
+</script>
+{% endblock content %}
+

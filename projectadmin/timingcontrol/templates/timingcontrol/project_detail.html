@@ -10,13 +10,42 @@
   <p><b>City: </b> {{project.city}} </p>
   <p><b>Coordenates: </b> {{project.lat_long}} </p>
   <p><b>Factured: </b> {{project.factured}} </p>
-  
+  <p><b>Total worked hours: </b><span id="hours"></span></p>
+  <p><b>Contributors: </b><span id="contributors"></span></p>
+
   <div class="mt-4">
     <a class="btn btn-danger" href="{% url 'project_delete' project.id %}">Delete project</a>
     <a class="btn btn-info" href="{% url 'project_update' project.id %}">Update project</a>
   </div>
+
+  {% for copy in project.times_set.all %}
+<!-- code to iterate across each times of a proyect -->
+<p hidden name="contributors">{{copy.user_id}}</p>
+<p hidden name="worked_hours">{{copy.worked_hours}}</p>
+{% endfor %}
+ 
 </div>
 
+<script>
+  let contributors = document.getElementsByName('contributors');
+  let showContrib = new Array();
+  contributors.forEach(element => {
+    if (element.textContent != 'None' && showContrib.indexOf(element.textContent)<0){
+      showContrib.push(element.textContent); 
+    }    
+  });
+  document.getElementById('contributors').textContent=showContrib.toString();
+  let worked_hours = document.getElementsByName('worked_hours');
+  let hours = 0;
+  worked_hours.forEach(element => {
+    if (element.textContent != 'None'){
+      hours+=(parseFloat(element.textContent));   
+    }    
+  });
+  document.getElementById('hours').textContent=hours;
+
+  console.log(hours)
+</script>
 
 {% endblock content %}
 <!-- Ejemplo con loop -->

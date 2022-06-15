@@ -66,4 +66,6 @@ urlpatterns += [
 urlpatterns += [
     path("workers/api/", views.WorkerListApiView.as_view(), name="api-workers"),
     path("api/projects/", views.ProjectListApiView.as_view(), name="api-projects"),
+    path("user_detail/api/projects/", views.ProjectListApiView.as_view(), name="api-projects-detail"),
+
 ]
