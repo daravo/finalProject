@@ -19,7 +19,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 
-con = sqlite3.connect('project_db.sqlite3', check_same_thread=False)
+con = sqlite3.connect('project_db.sqlite3', check_same_thread=False) #Conexión a base de datos.
 
 def sentencias (con, sentencia, listaDatos):#Recibe una sentencia SQL y una lista con los datos
     cursorObj = con.cursor()
@@ -222,8 +222,7 @@ def worker_detail_view(request, pk):
         worker_id = Worker.objects.get(pk=pk)
     except Worker.DoesNotExist:
         raise Http404('Worker does not exist')
-    
-    book_id=get_object_or_404(Worker, pk=pk)
+
     
     return render(
         request,
