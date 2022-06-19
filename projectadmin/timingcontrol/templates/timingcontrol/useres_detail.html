@@ -3,7 +3,7 @@
 {% block content %}
 {% block title %} <title>{{ useres.first_name }} {{ useres.last_name }}</title> {% endblock title %}
 <div class="container">
-
+  <a href="{% url 'users' %}" class="btn btn-warning mt-5">Go back</a>
   <h1 class="mt-5">{{ useres.first_name }} {{ useres.last_name }}</h1>
 
   <p><b>DNI: </b> {{useres.dni}} </p>

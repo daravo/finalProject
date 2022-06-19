@@ -76,8 +76,9 @@
       <h1 v-if="check_out" class="my-5">Realizar CHECK-OUT</h1>
       <span class="btn btn-outline-primary" @click="check_in=false; check_out=false">Atrás</span>
       
-      <p> Posicion aproximada: </p>
-      <div class="mx-auto" id="mapcanvas" style="width:280px; height:400px"></div>
+      <!-- las siguientes dos línes se les puede quitar el hidden para ver un mapa en el que se muestra dónde nos ha ubicado -->
+      <p hidden> Posicion aproximada: </p>
+      <div hidden class="mx-auto" id="mapcanvas" style="width:280px; height:400px"></div>
 
 
       <div v-if="project_around.length>0" class="mt-5 text-center">
@@ -91,7 +92,7 @@
         v-bind:datos="project"
         v-bind:key="project.name"
       ></proyecto>
-      [[fecha]]
+
    
        
     </div>
@@ -113,7 +114,7 @@
     <button class="card w-100" v-on:click="guardarhora(datos.name, datos.id)" type="button" data-bs-toggle="modal" data-bs-target="#modalCheckin">
         <div class="card-body p-0">
             <p class="card-text mb-0 w-100">[[datos.name]]</p>
-            <p class="card-text text-secondary w-100">[[datos.address]]</p>
+            <p class="card-text text-warning w-100">[[datos.address]]</p>
           </div>
         </button>
   </script>

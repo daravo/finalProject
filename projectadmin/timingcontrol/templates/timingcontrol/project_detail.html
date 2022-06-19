@@ -3,6 +3,8 @@
 {% block content %}
 {% block title %} <title>{{ project.name }} </title> {% endblock title %}
 <div class="container">
+
+  <a href="{% url 'projects' %}" class="btn btn-warning mt-5">Go back</a>
   <h1 class="my-5">{{ project.name }} - {{ project.city }}</h1>
 
   <p><b>Name: </b> {{project.name}} </p>

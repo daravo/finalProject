@@ -126,6 +126,7 @@ class UseresCreate(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     template_name = 'timingcontrol/user_form_create.html'
     success_url = reverse_lazy('users')#Cuando borra el usuario, vuelve a la lista de usuarios   
     def form_valid(self, form):
+        username = self.request.POST['username']
         name = self.request.POST['first_name']
         email = self.request.POST['email']
         subject = 'Validate your User'
@@ -135,7 +136,8 @@ class UseresCreate(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         template = render_to_string('email_template.html', {
             'name': name,
             'email': email,
-            'message': message
+            'message': message,
+            'username': username
         })
 
         email = EmailMessage(
